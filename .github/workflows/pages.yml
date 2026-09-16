@@ -1,3 +1,31 @@
+name: Deploy scripts to Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '94.Deployment/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Stage scripts under /deployment
+        run: |
+          mkdir -p _site/deployment
+          cp -r "94.Deployment/." _site/deployment/
+
       - name: Generate index.html with copyable install command
         run: |
           OWNER="${GITHUB_REPOSITORY_OWNER}"
@@ -93,3 +121,10 @@
           </body>
           </html>
           EOF
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - id: deployment
+        uses: actions/deploy-pages@v4
