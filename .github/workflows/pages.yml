@@ -1,31 +1,3 @@
-name: Deploy scripts to Pages
-
-on:
-  push:
-    branches: [main]
-    paths:
-      - '94.Deployment/**'
-  workflow_dispatch:
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Stage scripts under /deployment
-        run: |
-          mkdir -p _site/deployment
-          cp -r "94.Deployment/." _site/deployment/
-
       - name: Generate index.html with copyable install command
         run: |
           OWNER="${GITHUB_REPOSITORY_OWNER}"
@@ -39,26 +11,85 @@ jobs:
           <html lang="en">
           <head>
             <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
             <title>Deploy</title>
             <style>
-              body { font-family: system-ui, sans-serif; max-width: 640px; margin: 4rem auto; padding: 0 1rem; }
-              pre { background: #111; color: #eee; padding: 1rem; border-radius: 8px; overflow-x: auto; }
-              button { margin-top: 0.5rem; padding: 0.4rem 0.8rem; cursor: pointer; }
+              :root { color-scheme: dark; }
+              * { box-sizing: border-box; }
+              body {
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+                background: #0d1117;
+                color: #e6edf3;
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0;
+                padding: 1.5rem;
+              }
+              .card {
+                width: 100%;
+                max-width: 640px;
+                background: #161b22;
+                border: 1px solid #30363d;
+                border-radius: 12px;
+                padding: 2rem;
+              }
+              h1 { margin: 0 0 0.5rem; font-size: 1.5rem; }
+              p { margin: 0 0 1.25rem; color: #8b949e; }
+              .cmd-row {
+                display: flex;
+                align-items: stretch;
+                background: #010409;
+                border: 1px solid #30363d;
+                border-radius: 8px;
+                overflow: hidden;
+              }
+              code {
+                flex: 1;
+                padding: 0.9rem 1rem;
+                font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+                font-size: 0.9rem;
+                white-space: pre-wrap;
+                word-break: break-all;
+                color: #79c0ff;
+              }
+              button {
+                border: none;
+                border-left: 1px solid #30363d;
+                background: #21262d;
+                color: #e6edf3;
+                padding: 0 1.25rem;
+                cursor: pointer;
+                font-size: 0.85rem;
+                font-weight: 600;
+                transition: background 0.15s ease;
+              }
+              button:hover { background: #30363d; }
+              button.copied { background: #238636; color: #fff; }
             </style>
           </head>
           <body>
-            <h1>Deploy</h1>
-            <p>Run this command to install:</p>
-            <pre><code id="cmd">${CMD}</code></pre>
-            <button onclick="navigator.clipboard.writeText(document.getElementById('cmd').textContent)">Copy</button>
+            <div class="card">
+              <h1>Deploy</h1>
+              <p>Run this command to install:</p>
+              <div class="cmd-row">
+                <code id="cmd">${CMD}</code>
+                <button id="copyBtn" onclick="copyCmd()">Copy</button>
+              </div>
+            </div>
+            <script>
+              function copyCmd() {
+                const btn = document.getElementById('copyBtn');
+                navigator.clipboard.writeText(document.getElementById('cmd').textContent);
+                btn.textContent = 'Copied!';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                  btn.textContent = 'Copy';
+                  btn.classList.remove('copied');
+                }, 1500);
+              }
+            </script>
           </body>
           </html>
           EOF
-
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: _site
-
-      - id: deployment
-        uses: actions/deploy-pages@v4
