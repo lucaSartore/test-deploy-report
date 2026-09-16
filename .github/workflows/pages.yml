@@ -26,6 +26,35 @@ jobs:
           mkdir -p _site/deployment
           cp -r "94.Deployment/." _site/deployment/
 
+      - name: Generate index.html with copyable install command
+        run: |
+          OWNER="${GITHUB_REPOSITORY_OWNER}"
+          REPO_NAME="${GITHUB_REPOSITORY#*/}"
+          PAGES_URL="https://${OWNER}.github.io/${REPO_NAME}"
+          SCRIPT_URL="${PAGES_URL}/deployment/deploy.sh"
+          CMD="curl -fsSL ${SCRIPT_URL} | bash"
+
+          cat > _site/index.html <<EOF
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="UTF-8">
+            <title>Deploy</title>
+            <style>
+              body { font-family: system-ui, sans-serif; max-width: 640px; margin: 4rem auto; padding: 0 1rem; }
+              pre { background: #111; color: #eee; padding: 1rem; border-radius: 8px; overflow-x: auto; }
+              button { margin-top: 0.5rem; padding: 0.4rem 0.8rem; cursor: pointer; }
+            </style>
+          </head>
+          <body>
+            <h1>Deploy</h1>
+            <p>Run this command to install:</p>
+            <pre><code id="cmd">${CMD}</code></pre>
+            <button onclick="navigator.clipboard.writeText(document.getElementById('cmd').textContent)">Copy</button>
+          </body>
+          </html>
+          EOF
+
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
