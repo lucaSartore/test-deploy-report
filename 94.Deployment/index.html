@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Deploy</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.0/marked.min.js"></script>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #0d1117;
+    color: #e6edf3;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 1.5rem;
+  }
+  .card {
+    width: 100%;
+    max-width: 640px;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 12px;
+    padding: 2rem;
+  }
+  h1 { margin: 0 0 0.5rem; font-size: 1.5rem; }
+  p { margin: 0 0 1.25rem; color: #8b949e; }
+  .cmd-row {
+    display: flex;
+    align-items: stretch;
+    background: #010409;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  code {
+    flex: 1;
+    padding: 0.9rem 1rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.9rem;
+    white-space: pre-wrap;
+    word-break: break-all;
+    color: #79c0ff;
+  }
+  button {
+    border: none;
+    border-left: 1px solid #30363d;
+    background: #21262d;
+    color: #e6edf3;
+    padding: 0 1.25rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: background 0.15s ease;
+  }
+  button:hover { background: #30363d; }
+  button.copied { background: #238636; color: #fff; }
+  .readme {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #30363d;
+    line-height: 1.6;
+  }
+  .readme h1, .readme h2, .readme h3 { margin-top: 1.5em; }
+  .readme code {
+    background: #010409;
+    padding: 0.15em 0.4em;
+    border-radius: 4px;
+    font-size: 0.85em;
+    white-space: normal;
+    word-break: normal;
+    color: #79c0ff;
+  }
+  .readme pre { background: #010409; padding: 1rem; border-radius: 8px; overflow-x: auto; }
+  .readme pre code { padding: 0; }
+  .readme a { color: #58a6ff; }
+  .readme table { border-collapse: collapse; width: 100%; margin: 1em 0; }
+  .readme th, .readme td { border: 1px solid #30363d; padding: 0.5em 0.8em; text-align: left; }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>Deploy</h1>
+  <p>Run this command to install:</p>
+  <div class="cmd-row">
+    <code id="cmd">echo hello world</code>
+    <button id="copyBtn" onclick="copyCmd()">Copy</button>
+  </div>
+  <div class="readme" id="readme">Loading README…</div>
+</div>
+<script>
+  function copyCmd() {
+    const btn = document.getElementById('copyBtn');
+    navigator.clipboard.writeText(document.getElementById('cmd').textContent);
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = 'Copy';
+      btn.classList.remove('copied');
+    }, 1500);
+  }
+
+  fetch('./README.md')
+    .then(r => r.ok ? r.text() : Promise.reject())
+    .then(md => { document.getElementById('readme').innerHTML = marked.parse(md); })
+    .catch(() => { document.getElementById('readme').style.display = 'none'; });
+</script>
+</body>
+</html>
