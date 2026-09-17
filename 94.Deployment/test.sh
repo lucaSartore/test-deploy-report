@@ -1,2 +1,0 @@
-echo "Deployment... :-)"
-echo "Testing... :-)"

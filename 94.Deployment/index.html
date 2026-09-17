@@ -107,7 +107,7 @@
 
   // insert the full command (that is independent from the pages)
   document.getElementById('cmd').textContent =
-    `curl -fsSL ${window.location.href}/deploy.sh | bash`;
+    `curl -fsSL ${window.location.href}/scripts.delivery.sh | bash`;
 
   // fetch and insert the readme
   fetch('./README.md')
