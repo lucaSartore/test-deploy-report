@@ -28,11 +28,11 @@ main() {
     echo "✅ Scripts downloaded"
     echo
 
-    read -rp "🚀 All scripts downloaded... would you like to proceed on to the index? [Y/N] " answer
+    read -rp "🚀 All scripts downloaded... would you like to proceed on to the index? [Y/N] " answer < /dev/tty
     case "$answer" in
         [Yy]|[Yy][Ee][Ss])
             echo "▶️  Proceeding to index.sh..."
-            ./index.sh
+            ./index.sh < /dev/tty
             ;;
         *)
             echo "🛑 Stopping here."
